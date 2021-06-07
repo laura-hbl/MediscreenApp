@@ -2,6 +2,7 @@ package com.mediscreen.patient.service;
 
 import com.mediscreen.patient.dto.PatientDTO;
 import com.mediscreen.patient.exception.DataAlreadyRegisteredException;
+import com.mediscreen.patient.exception.ResourceNotFoundException;
 import com.mediscreen.patient.model.Patient;
 import com.mediscreen.patient.repository.PatientRepository;
 import com.mediscreen.patient.util.DTOConverter;
@@ -42,5 +43,27 @@ public class PatientService implements IPatientService {
         Patient patientSaved = patientRepository.save(modelConverter.toPatient(patientDTO));
 
         return dtoConverter.toPatientDTO(patientSaved);
+    }
+
+    public PatientDTO updatePatient(final int patientId, final PatientDTO patientDTO) {
+        LOGGER.debug("Inside PatientService.updatePatient");
+
+        patientRepository.findById(patientId).orElseThrow(() ->
+                new ResourceNotFoundException("No patient registered with this id"));
+
+        Patient patientToUpdate = modelConverter.toPatient(patientDTO);
+        patientToUpdate.setId(patientId);
+        Patient patientUpdated = patientRepository.save(patientToUpdate);
+
+        return dtoConverter.toPatientDTO(patientUpdated);
+    }
+
+    public PatientDTO getPatientById(final int patientId) {
+        LOGGER.debug("Inside PatientService.getPatientById");
+
+        Patient patient = patientRepository.findById(patientId).orElseThrow(() ->
+                new ResourceNotFoundException("No patient registered with this id"));
+
+        return dtoConverter.toPatientDTO(patient);
     }
 }
