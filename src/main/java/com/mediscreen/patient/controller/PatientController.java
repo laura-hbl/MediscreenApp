@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -48,6 +49,32 @@ public class PatientController {
         patientService.addPatient(patientDTO);
 
         LOGGER.info("POST Request on /patient/validate  - SUCCESS");
+        return "redirect:/patient/list";
+    }
+
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(@PathVariable("id") final Integer patientId, final Model model) {
+        LOGGER.debug("GET Request on /patient/update/{id} with id : {}", patientId);
+
+        PatientDTO patient = patientService.getPatientById(patientId);
+        model.addAttribute("patientDTO", patient);
+
+        LOGGER.info("GET Request on /patient/update/{id} - SUCCESS");
+        return "patient/update";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateUser(@PathVariable("id") final Integer patientId, @Valid final PatientDTO patientDTO,
+                             final BindingResult result) {
+        LOGGER.debug("POST Request on /patient/update/{id} with id : {}", patientId);
+
+        if (result.hasErrors()) {
+            LOGGER.error("Error(s): {}", result);
+            return "patient/update";
+        }
+        patientService.updatePatient(patientId, patientDTO);
+
+        LOGGER.info("POST Request on /patient/update/{id} - SUCCESS");
         return "redirect:/patient/list";
     }
 }
