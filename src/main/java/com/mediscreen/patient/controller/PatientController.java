@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,13 @@ public class PatientController {
     @Autowired
     public PatientController(final IPatientService patientService) {
         this.patientService = patientService;
+    }
+
+    @GetMapping("/")
+    public String showHomePage() {
+        LOGGER.debug("GET Request on /patient/");
+
+        return "home";
     }
 
     @GetMapping("/add")
@@ -75,6 +83,27 @@ public class PatientController {
         patientService.updatePatient(patientId, patientDTO);
 
         LOGGER.info("POST Request on /patient/update/{id} - SUCCESS");
+        return "redirect:/patient/list";
+    }
+
+    @GetMapping("/list")
+    public String showPatientList(final Model model, @Param("keyword") String keyword) {
+        LOGGER.debug("GET Request on /patient/list");
+
+        model.addAttribute("patients", patientService.getAllPatient(keyword));
+        model.addAttribute("keyword", keyword);
+
+        LOGGER.info("GET Request on /patient/list - SUCCESS");
+        return "patient/list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deletePatient(@PathVariable("id") final Integer patientId) {
+        LOGGER.debug("GET Request on /patient/delete/{id} with id : {}", patientId);
+
+        patientService.deletePatient(patientId);
+
+        LOGGER.info("GET Request on /patient/delete/{id} - SUCCESS");
         return "redirect:/patient/list";
     }
 }
