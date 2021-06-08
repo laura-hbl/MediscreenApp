@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PatientService implements IPatientService {
 
@@ -65,5 +68,32 @@ public class PatientService implements IPatientService {
                 new ResourceNotFoundException("No patient registered with this id"));
 
         return dtoConverter.toPatientDTO(patient);
+    }
+
+    public List<PatientDTO> getAllPatient(final String keyword) {
+        LOGGER.debug("Inside PatientService.getAllPatient");
+
+        if (keyword != null) {
+            List<PatientDTO> searchPatient = patientRepository.search(keyword).stream()
+                    .map(patient -> dtoConverter.toPatientDTO(patient))
+                    .collect(Collectors.toList());
+
+            return searchPatient;
+        }
+
+        List<PatientDTO> allPatient = patientRepository.findAll().stream()
+                .map(patient -> dtoConverter.toPatientDTO(patient))
+                .collect(Collectors.toList());
+
+        return allPatient;
+    }
+
+    public void deletePatient(final int patientId) {
+        LOGGER.debug("Inside PatientService.deletePatient");
+
+        patientRepository.findById(patientId).orElseThrow(() ->
+                new ResourceNotFoundException("No patient registered with this id"));
+
+        patientRepository.deleteById(patientId);
     }
 }
