@@ -74,7 +74,7 @@ public class PatientService implements IPatientService {
         LOGGER.debug("Inside PatientService.getAllPatient");
 
         if (keyword != null) {
-            List<PatientDTO> searchPatient = patientRepository.search(keyword).stream()
+            List<PatientDTO> searchPatient = patientRepository.findByKeyword(keyword).stream()
                     .map(patient -> dtoConverter.toPatientDTO(patient))
                     .collect(Collectors.toList());
 
