@@ -18,6 +18,11 @@ public class HomeController {
      */
     private static final Logger LOGGER = LogManager.getLogger(HomeController.class);
 
+    /**
+     * Displays Mediscreen app home page.
+     *
+     * @return The reference to the home HTML page
+     */
     @GetMapping("/")
     public String showHomePage() {
         LOGGER.debug("GET Request on /");
