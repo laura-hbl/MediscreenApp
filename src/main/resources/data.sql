@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS mediscreen;
-USE mediscreen;
+CREATE DATABASE IF NOT EXISTS mediscreendb;
+USE mediscreendb;
 
 CREATE TABLE IF NOT EXISTS patients (
   id BIGINT AUTO_INCREMENT NOT NULL,
@@ -24,3 +24,7 @@ VALUES
 (8, "Buckland", "Max", "1945-06-24", 'M', "193 Vale St", "833-534-0864"),
 (9, "Clark", "Natalie", "1964-06-18", 'F', "12 Beechwood Road", "241-467-9197"),
 (10, "Bailey", "Piers", "1959-06-28", 'M', "1202 Bumble Dr", "747-815-0557");
+
+DROP DATABASE IF EXISTS mediscreendb_test;
+
+CREATE DATABASE mediscreendb_test CHARACTER SET utf8mb4;
