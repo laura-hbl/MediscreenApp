@@ -15,5 +15,4 @@ public interface IPatientService {
     void deletePatient(final int patientId);
 
     List<PatientDTO> getAllPatient(final String keyword);
-
 }
