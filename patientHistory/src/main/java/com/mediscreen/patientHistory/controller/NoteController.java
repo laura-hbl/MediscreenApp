@@ -5,10 +5,7 @@ import com.mediscreen.patientHistory.service.INotesService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/note")
@@ -32,5 +29,25 @@ public class NoteController {
 
         LOGGER.info("POST Request on /note/add - SUCCESS");
         return noteAdded;
+    }
+
+    @GetMapping("/update/{id}")
+    public NoteDTO getNoteById(@PathVariable("id") final String noteId) {
+        LOGGER.debug("GET Request on /note/update/{id} with note id : {}", noteId);
+
+        NoteDTO noteFound = notesService.getNoteById(noteId);
+
+        LOGGER.info("GET Request on /note/update/{id} - SUCCESS");
+        return noteFound;
+    }
+
+    @PostMapping("/update/{id}")
+    public NoteDTO updateNote(@PathVariable("id") final String noteId, @RequestBody final NoteDTO noteDTO) {
+        LOGGER.debug("POST Request on /note/update/{id} with note id : {}", noteId);
+
+        NoteDTO noteUpdated = notesService.updateNote(noteId, noteDTO);
+
+        LOGGER.info("POST Request on /note/update/{id} - SUCCESS");
+        return noteUpdated;
     }
 }
