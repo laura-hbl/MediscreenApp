@@ -6,4 +6,7 @@ public interface INotesService {
 
     NoteDTO addNote(final NoteDTO note);
 
+    NoteDTO getNoteById(final String noteId);
+
+    NoteDTO updateNote(final String noteId, final NoteDTO noteDTO);
 }

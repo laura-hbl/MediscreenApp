@@ -1,6 +1,7 @@
 package com.mediscreen.patientHistory.service;
 
 import com.mediscreen.patientHistory.dto.NoteDTO;
+import com.mediscreen.patientHistory.exception.ResourceNotFoundException;
 import com.mediscreen.patientHistory.model.Note;
 import com.mediscreen.patientHistory.repository.NoteRepository;
 import com.mediscreen.patientHistory.util.DTOConverter;
@@ -35,5 +36,27 @@ public class NotesService implements INotesService {
         Note noteAdded = noteRepository.save(modelConverter.toNote(noteDTO));
 
         return dtoConverter.toNoteDTO(noteAdded);
+    }
+
+    public NoteDTO getNoteById(final String noteId) {
+        LOGGER.debug("Inside NotesService.getNoteById");
+
+        Note note = noteRepository.findById(noteId).orElseThrow(() ->
+                new ResourceNotFoundException("No note registered with this id"));
+
+        return dtoConverter.toNoteDTO(note);
+    }
+
+    public NoteDTO updateNote(final String noteId, final NoteDTO noteDTO) {
+        LOGGER.debug("Inside NotesService.updateNote");
+
+        noteRepository.findById(noteId).orElseThrow(() ->
+                new ResourceNotFoundException("No note registered with this id"));
+
+        Note noteToUpdate = modelConverter.toNote(noteDTO);
+        noteToUpdate.setId(noteId);
+        Note noteUpdated = noteRepository.save(noteToUpdate);
+
+        return dtoConverter.toNoteDTO(noteUpdated);
     }
 }
