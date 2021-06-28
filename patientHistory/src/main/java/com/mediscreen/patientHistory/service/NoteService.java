@@ -11,10 +11,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class NotesService implements INotesService {
+import java.util.List;
+import java.util.stream.Collectors;
 
-    private static final Logger LOGGER = LogManager.getLogger(NotesService.class);
+@Service
+public class NoteService implements INoteService {
+
+    private static final Logger LOGGER = LogManager.getLogger(NoteService.class);
 
     private final NoteRepository noteRepository;
 
@@ -23,15 +26,15 @@ public class NotesService implements INotesService {
     private final DTOConverter dtoConverter;
 
     @Autowired
-    public NotesService(final NoteRepository noteRepository, final ModelConverter modelConverter,
-                        final DTOConverter dtoConverter) {
+    public NoteService(final NoteRepository noteRepository, final ModelConverter modelConverter,
+                       final DTOConverter dtoConverter) {
         this.noteRepository = noteRepository;
         this.modelConverter = modelConverter;
         this.dtoConverter = dtoConverter;
     }
 
     public NoteDTO addNote(final NoteDTO noteDTO) {
-        LOGGER.debug("Inside NotesService.addNote");
+        LOGGER.debug("Inside NoteService.addNote");
 
         Note noteAdded = noteRepository.save(modelConverter.toNote(noteDTO));
 
@@ -39,7 +42,7 @@ public class NotesService implements INotesService {
     }
 
     public NoteDTO getNoteById(final String noteId) {
-        LOGGER.debug("Inside NotesService.getNoteById");
+        LOGGER.debug("Inside NoteService.getNoteById");
 
         Note note = noteRepository.findById(noteId).orElseThrow(() ->
                 new ResourceNotFoundException("No note registered with this id"));
@@ -48,7 +51,7 @@ public class NotesService implements INotesService {
     }
 
     public NoteDTO updateNote(final String noteId, final NoteDTO noteDTO) {
-        LOGGER.debug("Inside NotesService.updateNote");
+        LOGGER.debug("Inside NoteService.updateNote");
 
         noteRepository.findById(noteId).orElseThrow(() ->
                 new ResourceNotFoundException("No note registered with this id"));
@@ -58,5 +61,26 @@ public class NotesService implements INotesService {
         Note noteUpdated = noteRepository.save(noteToUpdate);
 
         return dtoConverter.toNoteDTO(noteUpdated);
+    }
+
+    public List<NoteDTO> getAllNote(final Integer patientId) {
+        LOGGER.debug("Inside NoteService.getAllNote");
+
+        List<Note> notes = noteRepository.findByPatientId(patientId);
+
+        List<NoteDTO> allNote = notes.stream()
+                .map(note -> dtoConverter.toNoteDTO(note))
+                .collect(Collectors.toList());
+
+        return allNote;
+    }
+
+    public void deleteNote(final String noteId) {
+        LOGGER.debug("Inside NoteService.deleteNote");
+
+        noteRepository.findById(noteId).orElseThrow(() ->
+                new ResourceNotFoundException("No note registered with this id"));
+
+        noteRepository.deleteById(noteId);
     }
 }
