@@ -17,4 +17,10 @@ public class NoteDTO {
     private LocalDate date;
 
     private String note;
+
+    public NoteDTO(final Integer patientId, final LocalDate date, final String note) {
+        this.patientId = patientId;
+        this.date = date;
+        this.note = note;
+    }
 }
