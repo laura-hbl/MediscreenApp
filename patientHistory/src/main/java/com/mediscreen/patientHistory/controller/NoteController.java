@@ -10,19 +10,43 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Creates REST endpoints for crud operations on Note data.
+ *
+ * @author Laura Habdul
+ * @see INoteService
+ */
 @RestController
 @RequestMapping("/note")
 public class NoteController {
 
+    /**
+     * NoteController logger.
+     */
     private static final Logger LOGGER = LogManager.getLogger(NoteController.class);
 
+    /**
+     * INoteService's implement class reference.
+     */
     private final INoteService notesService;
 
+    /**
+     * Constructor of class NoteController.
+     * Initialize notesService.
+     *
+     * @param notesService INoteService's implement class reference
+     */
     @Autowired
     public NoteController(final INoteService notesService) {
         this.notesService = notesService;
     }
 
+    /**
+     * Adds a new note.
+     *
+     * @param noteDTO the note to be added
+     * @return The added note
+     */
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public NoteDTO addNote(@RequestBody final NoteDTO noteDTO) {
@@ -34,6 +58,12 @@ public class NoteController {
         return noteAdded;
     }
 
+    /**
+     * Retrieves a note based on the given id.
+     *
+     * @param noteId id of the note
+     * @return The note with the given id
+     */
     @GetMapping("/get/{id}")
     public NoteDTO getNoteById(@PathVariable("id") final String noteId) {
         LOGGER.debug("GET Request on /note/get/{id} with note id : {}", noteId);
@@ -44,6 +74,13 @@ public class NoteController {
         return noteFound;
     }
 
+    /**
+     * Updates a saved note.
+     *
+     * @param noteId  id of the note to be updated
+     * @param noteDTO the note to be updated
+     * @return The updated note
+     */
     @PostMapping("/update/{id}")
     public NoteDTO updateNote(@PathVariable("id") final String noteId, @RequestBody final NoteDTO noteDTO) {
         LOGGER.debug("POST Request on /note/update/{id} with note id : {}", noteId);
@@ -54,6 +91,12 @@ public class NoteController {
         return noteUpdated;
     }
 
+    /**
+     * Retrieves the note list of patient with the given id.
+     *
+     * @param patientId id of the patient
+     * @return The note list
+     */
     @GetMapping("/list/{id}")
     public List<NoteDTO> getNoteList(@PathVariable("id") final Integer patientId) {
         LOGGER.debug("GET Request on /note/list/{id} with patient id : {}", patientId);
@@ -64,6 +107,11 @@ public class NoteController {
         return allNote;
     }
 
+    /**
+     * Deletes a saved note.
+     *
+     * @param noteId id of the note to be deleted
+     */
     @GetMapping("/delete/{id}")
     public void deleteNote(@PathVariable("id") final String noteId) {
         LOGGER.debug("GET Request on /note/delete/{id} with note id : {}", noteId);
