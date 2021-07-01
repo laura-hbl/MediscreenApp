@@ -2,6 +2,11 @@ package com.mediscreen.patientAssessment.enums;
 
 import lombok.Getter;
 
+/**
+ * Contains the different diabetes triggers.
+ *
+ * @author Laura Habdul
+ */
 @Getter
 public enum DiabetesTrigger {
 

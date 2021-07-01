@@ -1,6 +1,11 @@
 package com.mediscreen.patientAssessment.enums;
 import lombok.Getter;
 
+/**
+ * Contains the different diabetes risk levels.
+ *
+ * @author Laura Habdul
+ */
 @Getter
 public enum RiskLevels {
 
