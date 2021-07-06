@@ -6,14 +6,10 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Creates REST endpoints for crud operations on Patient data.
@@ -21,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author Laura Habdul
  * @see IPatientService
  */
-@Controller
+@RestController
 @RequestMapping("/patient")
 public class PatientController {
 
@@ -47,59 +43,37 @@ public class PatientController {
     }
 
     /**
-     * Displays form for adding a new user.
-     *
-     * @param model makes a new UserDTO object available to user/add HTML page
-     * @return The reference to the user/add HTML page
-     */
-    @GetMapping("/add")
-    public String addPatientForm(final Model model) {
-        LOGGER.debug("GET Request on /patient/add");
-
-        model.addAttribute("patientDTO", new PatientDTO());
-
-        LOGGER.info("GET Request on /patient/add - SUCCESS");
-        return "patient/add";
-    }
-
-    /**
      * Adds a new patient.
      *
      * @param patientDTO the patient to be added
-     * @param result     holds the result of validation and binding and contains errors that may have occurred
-     * @return The reference to the patient/add HTML page if result has errors. Else, redirects to /patient/list endpoint
+     * @return The added patient
      */
-    @PostMapping("/validate")
-    public String validate(@Valid final PatientDTO patientDTO, final BindingResult result) {
-        LOGGER.debug("POST Request on /patient/validate on patient {} {}", patientDTO.getFirstName() + "" +
+    @PostMapping("/add")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PatientDTO addPatient(@RequestBody final PatientDTO patientDTO) {
+        LOGGER.debug("POST Request on /patient/add on patient {} {}", patientDTO.getFirstName() + "" +
                 patientDTO.getLastName());
 
-        if (result.hasErrors()) {
-            LOGGER.error("Error(s): {}", result);
-            return "patient/add";
-        }
-        patientService.addPatient(patientDTO);
+        PatientDTO patientAdded = patientService.addPatient(patientDTO);
 
-        LOGGER.info("POST Request on /patient/validate  - SUCCESS");
-        return "redirect:/patient/list";
+        LOGGER.info("POST Request on /patient/add - SUCCESS");
+        return patientAdded;
     }
 
     /**
-     * Displays a form to update an existing patient.
+     * Retrieves a patient based on the given id.
      *
-     * @param patientId id of the patient to be updated
-     * @param model     makes PatientDTO object available to patient/update HTML page
-     * @return The reference to the patient/update HTML page
+     * @param patientId id of the patient
+     * @return The patient with the given id
      */
-    @GetMapping("/update/{id}")
-    public String showUpdateForm(@PathVariable("id") final Integer patientId, final Model model) {
-        LOGGER.debug("GET Request on /patient/update/{id} with id : {}", patientId);
+    @GetMapping("/get/{id}")
+    public PatientDTO getPatientById(@PathVariable("id") final Integer patientId) {
+        LOGGER.debug("GET Request on /patient/get/{id} with id : {}", patientId);
 
         PatientDTO patient = patientService.getPatientById(patientId);
-        model.addAttribute("patientDTO", patient);
 
-        LOGGER.info("GET Request on /patient/update/{id} - SUCCESS");
-        return "patient/update";
+        LOGGER.info("GET Request on /patient/get/{id} - SUCCESS");
+        return patient;
     }
 
     /**
@@ -107,55 +81,46 @@ public class PatientController {
      *
      * @param patientId  id of the patient to be updated
      * @param patientDTO the patient to be updated
-     * @param result     holds the result of validation and binding and contains errors that may have occurred
-     * @return The reference to the patient/update HTML page if result has errors. Else, redirects to /patient/list endpoint
+     * @return The updated patient
      */
     @PostMapping("/update/{id}")
-    public String updateUser(@PathVariable("id") final Integer patientId, @Valid final PatientDTO patientDTO,
-                             final BindingResult result) {
+    public PatientDTO updatePatient(@PathVariable("id") final Integer patientId,
+                                    @Valid @RequestBody final PatientDTO patientDTO) {
         LOGGER.debug("POST Request on /patient/update/{id} with id : {}", patientId);
 
-        if (result.hasErrors()) {
-            LOGGER.error("Error(s): {}", result);
-            return "patient/update";
-        }
-        patientService.updatePatient(patientId, patientDTO);
+        PatientDTO patientUpdated = patientService.updatePatient(patientId, patientDTO);
 
         LOGGER.info("POST Request on /patient/update/{id} - SUCCESS");
-        return "redirect:/patient/list";
+        return patientUpdated;
     }
 
     /**
-     * Displays patient list.
+     * Displays all the patient list or the list of patients whose first or last name matches the entered keyword.
      *
-     * @param model   makes patient list objects available to patient/list HTML page
      * @param keyword keyword entered by the user to search for a patient
-     * @return The reference to the patient/list HTML page
+     * @return The patient list
      */
     @GetMapping("/list")
-    public String showPatientList(final Model model, @Param("keyword") final String keyword) {
+    public List<PatientDTO> getPatientList(@RequestParam(value = "keyword", required = false) final String keyword) {
         LOGGER.debug("GET Request on /patient/list");
 
-        model.addAttribute("patients", patientService.getAllPatient(keyword));
-        model.addAttribute("keyword", keyword);
+        List<PatientDTO> patientList = patientService.getAllPatient(keyword);
 
         LOGGER.info("GET Request on /patient/list - SUCCESS");
-        return "patient/list";
+        return patientList;
     }
 
     /**
      * Deletes a saved patient.
      *
      * @param patientId id of the patient to be deleted
-     * @return The redirect to /patient/list endpoint
      */
     @GetMapping("/delete/{id}")
-    public String deletePatient(@PathVariable("id") final Integer patientId) {
+    public void deletePatient(@PathVariable("id") final Integer patientId) {
         LOGGER.debug("GET Request on /patient/delete/{id} with id : {}", patientId);
 
         patientService.deletePatient(patientId);
 
         LOGGER.info("GET Request on /patient/delete/{id} - SUCCESS");
-        return "redirect:/patient/list";
     }
 }

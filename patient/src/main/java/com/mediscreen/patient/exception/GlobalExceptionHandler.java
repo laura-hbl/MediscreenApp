@@ -1,14 +1,17 @@
 package com.mediscreen.patient.exception;
 
-import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 /**
  * Contains methods that handles exceptions across the whole application.
@@ -27,29 +30,50 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * Handles exception of the specific type DataAlreadyRegisteredException.
      *
      * @param ex       DataAlreadyRegisteredException object
-     * @param response HttpServletResponse object
+     * @param @return ResponseEntity error response object and Http Status generated
      */
     @ExceptionHandler(DataAlreadyRegisteredException.class)
-    public void handleConflict(final DataAlreadyRegisteredException ex, final HttpServletResponse response)
+    public ResponseEntity handleConflict(final DataAlreadyRegisteredException ex, final WebRequest request)
             throws IOException {
         LOGGER.error("Request - FAILED :", ex);
 
-        response.setStatus(HttpStatus.CONFLICT.value());
-        response.sendRedirect("/patient/add?error");
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    /**
+     * Handles exception of the specific type MethodArgumentTypeMismatchException.
+     *
+     * @param ex      MethodArgumentTypeMismatchException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity handleTypeMismatch(final MethodArgumentTypeMismatchException ex, final WebRequest request) {
+        LOGGER.error("Request - FAILED : Invalid id");
+
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
+        errorDetails.setMessage("Invalid id");
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Handles exception of the specific type ResourceNotFoundException.
      *
-     * @param ex       ResourceNotFoundException object
-     * @param response HttpServletResponse object
+     * @param ex      ResourceNotFoundException object
+     * @param request WebRequest object
+     * @return ResponseEntity error response object and Http Status generated
      */
     @ExceptionHandler(ResourceNotFoundException.class)
-    public void handleNotFound(final ResourceNotFoundException ex, final HttpServletResponse response)
-            throws IOException {
+    public ResponseEntity handleNotFound(final ResourceNotFoundException ex, final WebRequest request) {
         LOGGER.error("Request - FAILED :", ex);
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
 
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.sendRedirect("/404");
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 }
