@@ -20,7 +20,7 @@ public enum DiabetesTrigger {
     DIZZINESS("Dizziness"),
     RELAPSE("Relapse"),
     REACTION("Reaction"),
-    ANTIBODY("Antibody");
+    ANTIBODIES("Antibodies");
 
     private String trigger;
 
