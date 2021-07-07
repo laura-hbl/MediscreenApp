@@ -26,5 +26,4 @@ public class DTOConverterTest {
 
         assertThat(result).isEqualToComparingFieldByField(expectedPatientDTO);
     }
-
 }

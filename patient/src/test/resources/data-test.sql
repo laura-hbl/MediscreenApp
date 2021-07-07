@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS patients (
 
 INSERT IGNORE INTO patients (id, last_name, first_name, date_of_birth, sex, address, phone_number)
 VALUES
-(1, "Ferguson", "Lucas", "1968-06-22", 'M', "2 Warren Street ", "387-866-1399"),
+(1, "Ferguson", "Lucas", "1968-06-22", 'M', "2 Warren Street", "387-866-1399"),
 (2, "Rees", "Pippa", "1952-09-27", 'F', "745 West Valley Farms Drive", "628-423-0993"),
 (3, "Arnold", "Edward", "1952-11-11", 'M', "599 East Garden Ave", "123-727-2779"),
 (4, "Sharp", "Anthony", "1946-11-26", 'M', "894 Hall Street", "451-761-8383"),
