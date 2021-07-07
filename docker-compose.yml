@@ -1,0 +1,106 @@
+version: '3.3'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: mediPASSWORD
+      MYSQL_USER: mediscreen_USER
+      MYSQL_PASSWORD: mediPASSWORD
+      MYSQL_DATABASE: mediscreendb
+    ports:
+      - 3307:3306
+    volumes:
+      - mediscreen_mysql:/System/Volumes/Data/data/db
+    networks:
+      - web-server
+    restart: always
+
+  patient:
+    image: patient
+    container_name: patient
+    build:
+      context: ./patient/
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    networks:
+      - web-server
+    depends_on:
+      - mysql
+    restart: always
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27018:27017
+    volumes:
+      - mongo-volume:/data/db
+    networks:
+      - web-server
+    restart: always
+
+  patientHistory:
+    image: note
+    container_name: note
+    build:
+      context: ./patientHistory/
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATA_MONGODB_HOST=mongodb
+      - SPRING_DATA_MONGODB_PORT=27017
+    ports:
+      - 8082:8082
+    networks:
+      - web-server
+    depends_on:
+      - mongodb
+    restart: always
+
+  ui:
+    image: ui
+    container_name: ui
+    build:
+      context: ./ui/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PATIENT=patient:8081/patient
+      - PROXY_NOTE=note:8082/note
+      - PROXY_ASSESS=assess:8083/assess
+    ports:
+      - 8080:8080
+    networks:
+      - web-server
+    depends_on:
+      - patient
+      - patientHistory
+      - patientAssessment
+    restart: always
+
+  patientAssessment:
+    image: assess
+    container_name: assess
+    build:
+      context: ./patientAssessment/
+      dockerfile: Dockerfile
+    environment:
+      - PROXY_PATIENT=patient:8081/patient
+      - PROXY_NOTE=note:8082/note
+    ports:
+      - 8083:8083
+    networks:
+      - web-server
+    depends_on:
+      - patient
+      - patientHistory
+    restart: always
+
+networks:
+  web-server:
+    driver: bridge
+
+volumes:
+  mediscreen_mysql:
+  mongo-volume:
