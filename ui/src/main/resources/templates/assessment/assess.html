@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title>Patient assessment</title>
+    <link rel="stylesheet" type="text/css" href="../../css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+            <a href="/patient/list"><h5>Patient List</h5></a>
+        </div>
+    </div>
+    <div class="row"><h2>Diabetes assessment</h2></div>
+    <br/><br/>
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Date of birth</th>
+                <th>Sex</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Risk level</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:object="${assessmentDTO}">
+                <td style="width: 10%" th:text="${assessmentDTO.patientDTO.id}"></td>
+                <td th:text="${assessmentDTO.patientDTO.lastName}"></td>
+                <td th:text="${assessmentDTO.patientDTO.firstName}"></td>
+                <td th:text="${assessmentDTO.patientDTO.birthDate}"></td>
+                <td th:text="${assessmentDTO.patientDTO.sex}"></td>
+                <td th:text="${assessmentDTO.patientDTO.address}"></td>
+                <td th:text="${assessmentDTO.patientDTO.phoneNumber}"></td>
+                <td th:text="${assessmentDTO.diabetesRiskLevel}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

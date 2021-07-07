@@ -12,7 +12,7 @@
         <div class="col-6">
         </div>
         <div class="col-6 text-right">
-            <a href="/patient/"><h5>Home</h5></a>
+            <a href="/"><h5>Home</h5></a>
         </div>
     </div>
     <div class="row"><h2>Patient List</h2></div>
@@ -51,8 +51,8 @@
                 <td th:text="${patient.phoneNumber}"></td>
                 <td style="width: 20%" class="text-center">
                     <a th:href="@{/patient/update/{id}(id=${patient.id})}">Edit</a>|
-                    <a th:href="@{/patient/{id}(id=${patient.id})}">Notes</a>|
-                    <a th:href="@{/patient/{id}(id=${patient.id})}">Report</a>|
+                    <a th:href="@{/note/list/{id}(id=${patient.id})}">Notes</a>|
+                    <a th:href="@{/assess/{id}(id=${patient.id})}">Report</a>|
                     <a th:href="@{/patient/delete/{id}(id=${patient.id})}">Delete</a>
                 </td>
             </tr>
