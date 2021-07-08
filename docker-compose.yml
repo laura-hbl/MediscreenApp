@@ -73,10 +73,6 @@ services:
       - 8080:8080
     networks:
       - web-server
-    depends_on:
-      - patient
-      - patientHistory
-      - patientAssessment
     restart: always
 
   patientAssessment:
@@ -92,9 +88,6 @@ services:
       - 8083:8083
     networks:
       - web-server
-    depends_on:
-      - patient
-      - patientHistory
     restart: always
 
 networks:
