@@ -50,7 +50,7 @@ public class PatientController {
      */
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public PatientDTO addPatient(@RequestBody final PatientDTO patientDTO) {
+    public PatientDTO addPatient(@Valid @RequestBody final PatientDTO patientDTO) {
         LOGGER.debug("POST Request on /patient/add on patient {} {}", patientDTO.getFirstName() + "" +
                 patientDTO.getLastName());
 

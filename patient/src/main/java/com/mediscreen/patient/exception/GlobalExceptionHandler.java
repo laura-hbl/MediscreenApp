@@ -2,8 +2,11 @@ package com.mediscreen.patient.exception;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -12,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 /**
  * Contains methods that handles exceptions across the whole application.
@@ -75,5 +79,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 request.getDescription(false));
 
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public ResponseEntity handleMethodArgumentNotValid(final MethodArgumentNotValidException ex, final HttpHeaders header,
+                                                       final HttpStatus status, final WebRequest request) {
+        LOGGER.error("Request - FAILED :", ex);
+        // Get the error messages for invalid fields
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(", "));
+
+        // Create ValidationErrorResponse object using error messages and request details
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), errorMessage, request.getDescription(false));
+
+        return new ResponseEntity<Object>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 }

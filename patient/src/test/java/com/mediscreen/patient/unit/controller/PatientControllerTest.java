@@ -26,9 +26,8 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PatientController.class)
@@ -77,6 +76,38 @@ public class PatientControllerTest {
     }
 
     @Test
+    @Tag("addPatient")
+    @DisplayName("Give empty LastName field, when addPatient request, then return error message")
+    void givenAnEmptyPatientLastNameField_whenAddPatient_thenReturnErrorMessage() throws Exception {
+        PatientDTO patientDTO = new PatientDTO("", "Simon",
+                LocalDate.parse("1967-09-16"), "M", "5 Warren Street", "397-866-1344");
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(PATIENT_ADD_URL)
+                        .content(mapper.writeValueAsString(patientDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                        .andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).contains("Last name is mandatory");
+        verify(patientService, times(0)).addPatient(any(PatientDTO.class));
+    }
+
+    @Test
+    @Tag("addPatient")
+    @DisplayName("Given invalid sex value, when addPatient request, then return error message")
+    void givenAnInvalidSexValue_whenAddPatient_thenReturnErrorMessage() throws Exception {
+        PatientDTO patientDTO = new PatientDTO("Durant", "Simon",
+                LocalDate.parse("1967-09-16"), "P", "5 Warren Street", "397-866-1344");
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(PATIENT_ADD_URL)
+                .content(mapper.writeValueAsString(patientDTO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).contains("Please enter character M or F");
+        verify(patientService, times(0)).addPatient(any(PatientDTO.class));
+    }
+
+    @Test
     @Tag("updatePatient")
     @DisplayName("Given a Patient to update, when updatePatient, then return Ok status")
     public void givenAPatientToUpdate_whenUpdatePatient_thenReturnOkStatus() throws Exception {
@@ -87,6 +118,22 @@ public class PatientControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
+    }
+
+    @Test
+    @Tag("UpdatePatient")
+    @DisplayName("Given an invalid birthDate, when updatePatient request, then return error message and Patient update form")
+    void givenAnInvalidBirthDate_whenUpdatePatient_thenReturnErrorMessageAndPatientUpdateForm() throws Exception {
+        PatientDTO patientDTO = new PatientDTO("Durant", "Simon",
+                LocalDate.parse("9999-09-16"), "P", "5 Warren Street", "397-866-1344");
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(PATIENT_UPDATE_URL + 1)
+                .content(mapper.writeValueAsString(patientDTO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andReturn();
+
+        assertThat(result.getResponse().getContentAsString()).contains("Please enter a valid birth date");
+        verify(patientService, times(0)).updatePatient(anyInt(), any(PatientDTO.class));
     }
 
     @Test
