@@ -1,10 +1,14 @@
 package com.mediscreen.patient.constant;
 
+
+import lombok.NoArgsConstructor;
+
 /**
  * Contains the different Patient validator constraints.
  *
  * @author Laura Habdul
  */
+@NoArgsConstructor
 public class PatientConstraints {
 
     /**

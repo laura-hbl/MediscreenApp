@@ -1,5 +1,6 @@
 package com.mediscreen.ui.dto;
 
+import com.mediscreen.ui.constant.PatientConstraints;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -30,14 +31,14 @@ public class PatientDTO {
      * Last name of the patient.
      */
     @NotEmpty(message = "Last name is mandatory")
-    @Length(max = 125, message = "The maximum length for lastName is 125 characters")
+    @Length(max = PatientConstraints.LAST_NAME_MAX_SIZE, message = "The maximum length for lastName is 125 characters")
     private String lastName;
 
     /**
      * First name of the patient.
      */
     @NotEmpty(message = "First name is mandatory")
-    @Length(max = 125, message = "The maximum length for firstName is 125 characters")
+    @Length(max = PatientConstraints.FIRST_NAME_MAX_SIZE, message = "The maximum length for firstName is 125 characters")
     private String firstName;
 
     /**
@@ -52,20 +53,20 @@ public class PatientDTO {
      * Sex of the patient.
      */
     @NotEmpty(message = "Sex is mandatory")
-    @Length(max = 1, message = "The maximum length for sex is 1 characters")
+    @Length(max = PatientConstraints.SEX_MAX_SIZE, message = "The maximum length for sex is 1 characters")
     @Pattern(regexp = "^[M|F]{1}$", message = "Please enter character M or F")
     private String sex;
 
     /**
      * Address of the patient.
      */
-    @Length(max = 150, message = "The maximum length for address is 150 characters")
+    @Length(max = PatientConstraints.ADDRESS_MAX_SIZE, message = "The maximum length for address is 150 characters")
     private String address;
 
     /**
      * Phone number of the patient.
      */
-    @Length(max = 20, message = "Please enter a valid phone number"
+    @Length(max = PatientConstraints.PHONE_MAX_SIZE, message = "Please enter a valid phone number"
     )
     private String phoneNumber;
 
