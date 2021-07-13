@@ -5,14 +5,14 @@ services:
     image: mysql
     container_name: mysqldb
     environment:
-      MYSQL_ROOT_PASSWORD: mediPASSWORD
-      MYSQL_USER: mediscreen_USER
-      MYSQL_PASSWORD: mediPASSWORD
       MYSQL_DATABASE: mediscreendb
+      MYSQL_USER: mediuser
+      MYSQL_ROOT_PASSWORD: rootroot
+      MYSQL_PASSWORD: rootroot
     ports:
       - 3307:3306
     volumes:
-      - mediscreen_mysql:/System/Volumes/Data/data/db
+      - ./mediscreen_mysql:/var/lib/mysql
     networks:
       - web-server
     restart: always
@@ -25,6 +25,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8081:8081
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/mediscreendb?serverTimezone=Europe/Paris
+      - SPRING_DATASOURCE_USERNAME=mediuser
+      - SPRING_DATASOURCE_PASSWORD=rootroot
     networks:
       - web-server
     depends_on:

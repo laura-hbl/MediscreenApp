@@ -1,6 +1,10 @@
+DROP DATABASE IF EXISTS mediscreendb_test;
+
+CREATE DATABASE mediscreendb_test CHARACTER SET utf8mb4;
+
 USE mediscreendb_test;
 
-CREATE TABLE IF NOT EXISTS patients (
+CREATE TABLE patients (
   id BIGINT AUTO_INCREMENT NOT NULL,
   last_name VARCHAR(125) NOT NULL,
   first_name VARCHAR(125) NOT NULL,
